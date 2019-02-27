@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "uthread.h"
-#include "uthread_mutex_cond.h"
+#include "pthread.h"
 #include "spinlock.h"
 
 #define MAX_ITEMS 10
@@ -20,7 +19,8 @@ pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
 int items = 0;
 
 void* producer (void* v) {
-  for (int i=0; i<NUM_ITERATIONS; i++) {
+    int i;
+  for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
         pthread_mutex_lock(&mutex);
         if(items==MAX_ITEMS){
@@ -36,7 +36,8 @@ void* producer (void* v) {
 }
 
 void* consumer (void* v) {
-  for (int i=0; i<NUM_ITERATIONS; i++) {
+    int i;
+  for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
     pthread_mutex_lock(&mutex);
         if(items==0){
