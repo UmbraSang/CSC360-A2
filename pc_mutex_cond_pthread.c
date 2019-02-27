@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "pthread.h"
-#include "pthread_mutex_cond.h"
+#include "uthread.h"
+#include "uthread_mutex_cond.h"
 #include "spinlock.h"
 
 #define MAX_ITEMS 10
