@@ -19,7 +19,6 @@ pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
 int items = 0;
 
 void* producer (void* v) {
-    printf("in producer\n");
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
@@ -37,7 +36,6 @@ void* producer (void* v) {
 }
 
 void* consumer (void* v) {
-    printf("in consumer\n");
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
@@ -55,23 +53,18 @@ void* consumer (void* v) {
 }
 
 int main (int argc, char** argv) {
-    printf("pre init\n");
   pthread_t t[4];
-    printf("post init\n");
   
   // TODO: Create Threads and Join
   pthread_create(&t[1], NULL, producer, NULL);
   pthread_create(&t[2], NULL, producer, NULL);
   pthread_create(&t[3], NULL, consumer, NULL);
   pthread_create(&t[4], NULL, consumer, NULL);
-    printf("post creates\n");
 
   int i;
-    printf("pre join\n");
   for(i=0; i<4; i++){
      pthread_join(t[i], NULL);
   }
-    printf("post join\n");
   //
   
   printf ("producer_wait_count=%d\nconsumer_wait_count=%d\n", producer_wait_count, consumer_wait_count);
