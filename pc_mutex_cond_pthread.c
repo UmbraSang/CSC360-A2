@@ -5,6 +5,7 @@
 #include "spinlock.h"
 
 #define MAX_ITEMS 10
+#define NUM_THREADS 4
 const int NUM_ITERATIONS = 200;
 const int NUM_CONSUMERS  = 2;
 const int NUM_PRODUCERS  = 2;
@@ -57,6 +58,7 @@ int main (int argc, char** argv) {
   pthread_t t[4];
   
   // TODO: Create Threads and Join
+  int i;
   for(i=0; i<4; i++){
       if(i%2==0){
           pthread_create(&t[i], NULL, producer, NULL);
@@ -65,7 +67,6 @@ int main (int argc, char** argv) {
       }
   }
 
-  int i;
   for(i=0; i<4; i++){
      pthread_join(t[i], NULL);
   }

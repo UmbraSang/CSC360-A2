@@ -6,6 +6,7 @@
 #include "spinlock.h"
 
 #define MAX_ITEMS 10
+#define NUM_THREADS 4
 const int NUM_ITERATIONS = 200;
 const int NUM_CONSUMERS  = 2;
 const int NUM_PRODUCERS  = 2;
@@ -58,13 +59,13 @@ int main (int argc, char** argv) {
     produceable=uthread_cond_create(mutex);
     consumeable=uthread_cond_create(mutex);
 
-  uthread_t t[4];
+  uthread_t t[NUM_THREADS];
 
-  uthread_init (4);
+  uthread_init (NUM_THREADS);
   
   // TODO: Create Threads and Join
   int i;
-  for(i=0; i<4; i++){
+  for(i=0; i<NUM_THREADS; i++){
       if(i%2==0){
           t[i]= uthread_create(producer, NULL);
       }else{
@@ -72,7 +73,7 @@ int main (int argc, char** argv) {
       }
   }
   
-  for(i=0; i<4; i++){
+  for(i=0; i<NUM_THREADS; i++){
      uthread_join(t[i], NULL);
   }
   //
