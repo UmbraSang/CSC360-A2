@@ -61,16 +61,15 @@ int main (int argc, char** argv) {
   pthread_create(&t[3], NULL, consumer, NULL);
   pthread_create(&t[4], NULL, consumer, NULL);
 
-    int i;
-    for(i=0; i<4; i++){
-        pthread_join(t[i], NULL);
-    }
+  int i;
+  for(i=0; i<4; i++){
+     pthread_join(t[i], NULL);
+  }
   //
   
   printf ("producer_wait_count=%d\nconsumer_wait_count=%d\n", producer_wait_count, consumer_wait_count);
   printf ("items value histogram:\n");
   int sum=0;
-  int i;
   for (i = 0; i <= MAX_ITEMS; i++) {
     printf ("  items=%d, %d times\n", i, histogram [i]);
     sum += histogram [i];
