@@ -50,9 +50,9 @@ int smoke_count  [5];  // # of times smoker with resource smoked
 // TODO
 // You will probably need to add some procedures and struct etc.
 struct threadArgs {
-    struct Agent agent;
+    struct Agent* agent;
     enum Resource type;
-}
+};
 
 struct threadArgs* createThreadArgs(struct Agent* a, enum Resource b){
     struct threadArgs* args1 = malloc (sizeof (struct threadArgs));
@@ -68,6 +68,7 @@ pthread_mutex_t actorMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t matchMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t paperMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t tobaccoMutex=PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t actorsWake=PTHREAD_COND_INITIALIZER;
 
 void* resourceType(struct threadArgs* package){
     struct Agent* a = package->agent;
@@ -90,7 +91,7 @@ void* resourceType(struct threadArgs* package){
                 printf("Error has occured in ResourceType\n");
                 break;
         }
-        pthread_cond_broadcast(&actorMutex);
+        pthread_cond_broadcast(&actorsWake);
     }
 }
 
@@ -98,7 +99,8 @@ void* actor(struct threadArgs* package){
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     while(1){
-        pthread_mutex_lock(&a->actorMutex);
+        pthread_mutex_lock(&actorMutex);
+        pthread_cond_wait(&actorsWake, &actorMutex)
         switch (type){
             case MATCH:
                 if(paperAvail && tobaccoAvail){
@@ -176,16 +178,20 @@ int main (int argc, char** argv) {
   struct Agent*  a = createAgent();
   // TODO
     pthread_create(&t[0], NULL, agent, a);
-    int i;
-    for(i=1; i<=3; i++){
-        pthread_create(&t[i], NULL, actor, createThreadArgs(a, Resource[i]));
-        pthread_create(&t[i+3], NULL, resourceType, createThreadArgs(a, Resource[i]));
-    }
-    /*
-    pthread_create(&t[1], NULL, actor, MATCH);
-    pthread_create(&t[2], NULL, actor, PAPER);
-    pthread_create(&t[3], NULL, actor, TOBACCO);
-    */
+    // int i;
+    // for(i=1; i<=3; i++){
+    //     pthread_create(&t[i], NULL, actor, createThreadArgs(a, Resource[i]));
+    //     pthread_create(&t[i+3], NULL, resourceType, createThreadArgs(a, Resource[i]));
+    // }
+    
+    pthread_create(&t[1], NULL, actor, createThreadArgs(a, MATCH));
+    pthread_create(&t[2], NULL, actor, createThreadArgs(a, PAPER));
+    pthread_create(&t[3], NULL, actor, createThreadArgs(a, TOBACCO);
+    pthread_create(&t[4], NULL, resourceType, createThreadArgs(a, MATCH));
+    pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
+    pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
+
+    
   
   for(i=0; i<7; i++){
     pthread_join(t[i], NULL);
