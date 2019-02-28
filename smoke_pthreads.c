@@ -16,10 +16,10 @@
 
 struct Agent {
   pthread_mutex_t mutex;
-  pthread_cond_t  match = PTHREAD_COND_INITIALIZER;
-  pthread_cond_t  paper = PTHREAD_COND_INITIALIZER;
-  pthread_cond_t  tobacco = PTHREAD_COND_INITIALIZER;
-  pthread_cond_t  smoke = PTHREAD_COND_INITIALIZER;
+  pthread_cond_t  match;
+  pthread_cond_t  paper;
+  pthread_cond_t  tobacco;
+  pthread_cond_t  smoke;
 };
 
 struct Agent* createAgent() {
@@ -49,6 +49,18 @@ int smoke_count  [5];  // # of times smoker with resource smoked
 //
 // TODO
 // You will probably need to add some procedures and struct etc.
+struct threadArgs {
+    struct Agent agent;
+    enum Resource type;
+}
+
+struct threadArgs* createThreadArgs(struct Agent* a, enum Resource b){
+    struct threadArgs* args1 = malloc (sizeof (struct threadArgs));
+    args1->agent = a;
+    args1->type = b;
+    return args1;
+}
+
 int matchAvail = 0;
 int paperAvail = 0;
 int tobaccoAvail = 0;
@@ -57,7 +69,9 @@ pthread_mutex_t matchMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t paperMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t tobaccoMutex=PTHREAD_MUTEX_INITIALIZER;
 
-void* resourceType(enum Resource type){
+void* resourceType(struct threadArgs* package){
+    struct Agent* a = package->agent;
+    enum Resource type = package->type;
     while(1){
         switch (type){
             case MATCH:
@@ -80,7 +94,9 @@ void* resourceType(enum Resource type){
     }
 }
 
-void* actor(enum Resource type){
+void* actor(struct threadArgs* package){
+    struct Agent* a = package->agent;
+    enum Resource type = package->type;
     while(1){
         pthread_mutex_lock(&a->actorMutex);
         switch (type){
@@ -162,8 +178,8 @@ int main (int argc, char** argv) {
     pthread_create(&t[0], NULL, agent, a);
     int i;
     for(i=1; i<=3; i++){
-        pthread_create(&t[i], NULL, actor, Resource[i]);
-        pthread_create(&t[i+3], NULL, resourceType, Resource[i]);
+        pthread_create(&t[i], NULL, actor, createThreadArgs(a, Resource[i]));
+        pthread_create(&t[i+3], NULL, resourceType, createThreadArgs(a, Resource[i]));
     }
     /*
     pthread_create(&t[1], NULL, actor, MATCH);
