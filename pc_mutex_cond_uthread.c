@@ -42,7 +42,7 @@ void* consumer (void* v) {
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
     uthread_mutex_lock(mutex);
-        if(items==0){
+        while(items==0){
             consumer_wait_count++;
             uthread_cond_wait(consumeable);
         }        
