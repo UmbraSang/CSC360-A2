@@ -70,7 +70,8 @@ int main (int argc, char** argv) {
   printf ("producer_wait_count=%d\nconsumer_wait_count=%d\n", producer_wait_count, consumer_wait_count);
   printf ("items value histogram:\n");
   int sum=0;
-  for (int i = 0; i <= MAX_ITEMS; i++) {
+  int i;
+  for (i = 0; i <= MAX_ITEMS; i++) {
     printf ("  items=%d, %d times\n", i, histogram [i]);
     sum += histogram [i];
   }
