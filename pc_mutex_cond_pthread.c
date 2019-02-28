@@ -24,7 +24,7 @@ void* producer (void* v) {
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
         pthread_mutex_lock(&mutex);
-        if(items==MAX_ITEMS){
+        while(items==MAX_ITEMS){
             producer_wait_count++;
             pthread_cond_wait(&produceable, &mutex);
         }        
@@ -42,7 +42,7 @@ void* consumer (void* v) {
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
     pthread_mutex_lock(&mutex);
-        if(items==0){
+        while(items==0){
             consumer_wait_count++;
             pthread_cond_wait(&consumeable, &mutex);
         }        
