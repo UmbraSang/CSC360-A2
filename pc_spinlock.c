@@ -37,7 +37,7 @@ void* consumer (void* v) {
   for (int i=0; i<NUM_ITERATIONS; i++) {
     // TODO
     spinlock_lock(&conLock);
-        if(items==0){
+        while(items==0){
             consumer_wait_count++;
         }        
         items--;

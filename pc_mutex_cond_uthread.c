@@ -25,7 +25,7 @@ void* producer (void* v) {
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
     uthread_mutex_lock(mutex);
-        if(items==MAX_ITEMS){
+        while(items==MAX_ITEMS){
             producer_wait_count++;
             uthread_cond_wait(produceable);
         }        
