@@ -15,25 +15,36 @@
 #endif
 
 struct Agent {
-  pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
-  pthread_cond_t  match=PTHREAD_COND_INITIALIZER;
-  pthread_cond_t  paper=PTHREAD_COND_INITIALIZER;
-  pthread_cond_t  tobacco=PTHREAD_COND_INITIALIZER;
-  pthread_cond_t  smoke=PTHREAD_COND_INITIALIZER;
+  pthread_mutex_t mutex;
+  pthread_cond_t  match = PTHREAD_COND_INITIALIZER;
+  pthread_cond_t  paper = PTHREAD_COND_INITIALIZER;
+  pthread_cond_t  tobacco = PTHREAD_COND_INITIALIZER;
+  pthread_cond_t  smoke = PTHREAD_COND_INITIALIZER;
 };
 
 struct Agent* createAgent() {
   struct Agent* agent = malloc (sizeof (struct Agent));
-  /*
   agent->mutex = PTHREAD_MUTEX_INITIALIZER;
   
-  pthread_cond_init(&agent->paper, NULL);
-  pthread_cond_init(&agent->match, NULL);
-  pthread_cond_init(&agent->tobacco, NULL);
-  pthread_cond_init(&agent->smoke, NULL);
-  */
+  agent->paper=PTHREAD_COND_INITIALIZER;
+  agent->match=PTHREAD_COND_INITIALIZER;
+  agent->tobacco=PTHREAD_COND_INITIALIZER;
+  agent->smoke=PTHREAD_COND_INITIALIZER;
+  
   return agent;
 }
+
+/**
+ * You might find these declarations helpful.
+ *   Note that Resource enum had values 1, 2 and 4 so you can combine resources;
+ *   e.g., having a MATCH and PAPER is the value MATCH | PAPER == 1 | 2 == 3
+ */
+enum Resource            {    MATCH = 1, PAPER = 2,   TOBACCO = 4};
+char* resource_name [] = {"", "match",   "paper", "", "tobacco"};
+
+int signal_count [5];  // # of times resource signalled
+int smoke_count  [5];  // # of times smoker with resource smoked
+
 
 //
 // TODO
@@ -46,7 +57,7 @@ pthread_mutex_t matchMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t paperMutex=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t tobaccoMutex=PTHREAD_MUTEX_INITIALIZER;
 
-void* resourceType(Resource type){
+void* resourceType(enum Resource type){
     while(1){
         switch (type){
             case MATCH:
@@ -69,7 +80,7 @@ void* resourceType(Resource type){
     }
 }
 
-void* actor(Resource type){
+void* actor(enum Resource type){
     while(1){
         pthread_mutex_lock(&a->actorMutex);
         switch (type){
@@ -106,16 +117,6 @@ void smokeIt(Resource type){
 
 //
 
-/**
- * You might find these declarations helpful.
- *   Note that Resource enum had values 1, 2 and 4 so you can combine resources;
- *   e.g., having a MATCH and PAPER is the value MATCH | PAPER == 1 | 2 == 3
- */
-enum Resource            {    MATCH = 1, PAPER = 2,   TOBACCO = 4};
-char* resource_name [] = {"", "match",   "paper", "", "tobacco"};
-
-int signal_count [5];  // # of times resource signalled
-int smoke_count  [5];  // # of times smoker with resource smoked
 
 /**
  * This is the agent procedure.  It is complete and you shouldn't change it in
@@ -129,7 +130,8 @@ void* agent (void* av) {
   static const int matching_smoker[] = {TOBACCO,     PAPER,         MATCH};
   
   pthread_mutex_lock (&a->mutex);
-    for (int i = 0; i < NUM_ITERATIONS; i++) {
+  int i;
+    for (i = 0; i < NUM_ITERATIONS; i++) {
       int r = random() % 3;
       signal_count [matching_smoker [r]] ++;
       int c = choices [r];
@@ -157,18 +159,22 @@ int main (int argc, char** argv) {
   pthread_t t[7];
   struct Agent*  a = createAgent();
   // TODO
+    pthread_create(&t[0], NULL, agent, a);
     int i;
-    for(i=0; i<3; i++){
+    for(i=1; i<=3; i++){
         pthread_create(&t[i], NULL, actor, Resource[i]);
-        pthread_create(&t[i+4], NULL, resourceType, Resource[i]);
+        pthread_create(&t[i+3], NULL, resourceType, Resource[i]);
     }
     /*
     pthread_create(&t[1], NULL, actor, MATCH);
     pthread_create(&t[2], NULL, actor, PAPER);
     pthread_create(&t[3], NULL, actor, TOBACCO);
     */
+  
+  for(i=0; i<7; i++){
+    pthread_join(t[i], NULL);
+  }
 
-  pthread_join (pthread_create(&t[1], NULL, agent, a);, 0);
   assert (signal_count [MATCH]   == smoke_count [MATCH]);
   assert (signal_count [PAPER]   == smoke_count [PAPER]);
   assert (signal_count [TOBACCO] == smoke_count [TOBACCO]);
