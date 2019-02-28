@@ -96,6 +96,7 @@ void* resourceType(void* prepackage){
     }
 }
 
+<<<<<<< HEAD
 void smokeIt(struct Agent* a, enum Resource type){
     smoke_count[type]++;
     pthread_cond_signal(&a->smoke);
@@ -104,6 +105,8 @@ void smokeIt(struct Agent* a, enum Resource type){
     tobaccoAvail = 0;
 }
 
+=======
+>>>>>>> 2406ae60531ad930d9ed0fdf929d5fd9cb6b9969
 void* actor(void* prepackage){
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
@@ -135,6 +138,17 @@ void* actor(void* prepackage){
     }
 }
 
+<<<<<<< HEAD
+=======
+void smokeIt(enum Resource type){
+    smoke_count[type]++;
+    pthread_cond_signal(&a->smoke);
+    matchAvail = 0;
+    paperAvail = 0;
+    tobaccoAvail = 0;
+}
+
+>>>>>>> 2406ae60531ad930d9ed0fdf929d5fd9cb6b9969
 //
 
 
