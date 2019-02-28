@@ -114,17 +114,17 @@ void* actor(void* prepackage){
         switch (type){
             case MATCH:
                 if(paperAvail && tobaccoAvail){
-                    smokeIt(type);
+                    smokeIt(a, type);
                 }
                 break;
             case PAPER:
                 if(matchAvail && tobaccoAvail){
-                    smokeIt(type);
+                    smokeIt(a, type);
                 }
                 break;
             case TOBACCO:
                 if(paperAvail && matchAvail){
-                    smokeIt(type);
+                    smokeIt(a, type);
                 }
                 break;
             default:
