@@ -54,12 +54,11 @@ void* consumer (void* v) {
 }
 
 int main (int argc, char** argv) {
-    printf("ki");
-  pthread_t t[4];
+  pthread_t t[NUM_THREADS];
   
   // TODO: Create Threads and Join
   int i;
-  for(i=0; i<4; i++){
+  for(i=0; i<4NUM_THREADS; i++){
       if(i%2==0){
           pthread_create(&t[i], NULL, producer, NULL);
       }else{
@@ -67,7 +66,7 @@ int main (int argc, char** argv) {
       }
   }
 
-  for(i=0; i<4; i++){
+  for(i=0; i<NUM_THREADS; i++){
      pthread_join(t[i], NULL);
   }
   //
