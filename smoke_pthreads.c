@@ -64,13 +64,14 @@ struct threadArgs* createThreadArgs(struct Agent* a, enum Resource b){
 int matchAvail = 0;
 int paperAvail = 0;
 int tobaccoAvail = 0;
-pthread_mutex_t actorMutex=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t matchMutex=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t paperMutex=PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t tobaccoMutex=PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t actorsWake=PTHREAD_COND_INITIALIZER;
+pthread_mutex_t actorMutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t matchMutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t paperMutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t tobaccoMutex= PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t actorsWake   = PTHREAD_COND_INITIALIZER;
 
-void* resourceType(struct threadArgs* package){
+void* resourceType(void* prepackage){
+    struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     while(1){
@@ -95,12 +96,21 @@ void* resourceType(struct threadArgs* package){
     }
 }
 
-void* actor(struct threadArgs* package){
+void smokeIt(struct Agent* a, enum Resource type){
+    smoke_count[type]++;
+    pthread_cond_signal(&a->smoke);
+    matchAvail = 0;
+    paperAvail = 0;
+    tobaccoAvail = 0;
+}
+
+void* actor(void* prepackage){
+    struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     while(1){
         pthread_mutex_lock(&actorMutex);
-        pthread_cond_wait(&actorsWake, &actorMutex)
+        pthread_cond_wait(&actorsWake, &actorMutex);
         switch (type){
             case MATCH:
                 if(paperAvail && tobaccoAvail){
@@ -121,16 +131,8 @@ void* actor(struct threadArgs* package){
                 printf("Error has occured in Actor\n");
                 break;
         }
-        pthread_mutex_unlock(&a->actorMutex);
+        pthread_mutex_unlock(&actorMutex);
     }
-}
-
-void smokeIt(Resource type){
-    smoke_count[type]++;
-    pthread_cond_signal(&a->smoke);
-    matchAvail = 0;
-    paperAvail = 0;
-    tobaccoAvail = 0;
 }
 
 //
@@ -178,7 +180,7 @@ int main (int argc, char** argv) {
   struct Agent*  a = createAgent();
   // TODO
     pthread_create(&t[0], NULL, agent, a);
-    // int i;
+    int i;
     // for(i=1; i<=3; i++){
     //     pthread_create(&t[i], NULL, actor, createThreadArgs(a, Resource[i]));
     //     pthread_create(&t[i+3], NULL, resourceType, createThreadArgs(a, Resource[i]));
@@ -186,7 +188,7 @@ int main (int argc, char** argv) {
     
     pthread_create(&t[1], NULL, actor, createThreadArgs(a, MATCH));
     pthread_create(&t[2], NULL, actor, createThreadArgs(a, PAPER));
-    pthread_create(&t[3], NULL, actor, createThreadArgs(a, TOBACCO);
+    pthread_create(&t[3], NULL, actor, createThreadArgs(a, TOBACCO));
     pthread_create(&t[4], NULL, resourceType, createThreadArgs(a, MATCH));
     pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
