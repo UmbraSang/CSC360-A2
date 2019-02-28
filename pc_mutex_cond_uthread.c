@@ -30,9 +30,10 @@ void* producer (void* v) {
             uthread_cond_wait(produceable);
         }        
         items++;
+        assert (items <= MAX_ITEMS);
         histogram[items]++;
         uthread_cond_signal(consumeable);
-        uthread_mutex_unlock(mutex);
+    uthread_mutex_unlock(mutex);
   }
   return NULL;
 }
@@ -47,9 +48,10 @@ void* consumer (void* v) {
             uthread_cond_wait(consumeable);
         }        
         items--;
+        assert (items >= 0);
         histogram[items]++;
         uthread_cond_signal(produceable);
-        uthread_mutex_unlock(mutex);
+    uthread_mutex_unlock(mutex);
   }
   return NULL;
 }
