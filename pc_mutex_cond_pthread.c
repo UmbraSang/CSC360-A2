@@ -53,6 +53,7 @@ void* consumer (void* v) {
 }
 
 int main (int argc, char** argv) {
+    printf("ki");
   pthread_t t[4];
   
   // TODO: Create Threads and Join
