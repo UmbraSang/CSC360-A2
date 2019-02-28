@@ -57,10 +57,13 @@ int main (int argc, char** argv) {
   pthread_t t[4];
   
   // TODO: Create Threads and Join
-  pthread_create(&t[1], NULL, producer, NULL);
-  pthread_create(&t[2], NULL, producer, NULL);
-  pthread_create(&t[3], NULL, consumer, NULL);
-  pthread_create(&t[4], NULL, consumer, NULL);
+  for(i=0; i<4; i++){
+      if(i%2==0){
+          pthread_create(&t[i], NULL, producer, NULL);
+      }else{
+          pthread_create(&t[i], NULL, consumer, NULL);
+      }
+  }
 
   int i;
   for(i=0; i<4; i++){

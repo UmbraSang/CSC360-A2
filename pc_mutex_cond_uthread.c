@@ -23,15 +23,15 @@ void* producer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-    uthread_mutex_lock(&mutex);
+    uthread_mutex_lock(mutex);
         if(items==MAX_ITEMS){
             producer_wait_count++;
-            uthread_cond_wait(&produceable);
+            uthread_cond_wait(produceable);
         }        
         items++;
         histogram[items]++;
-        uthread_cond_signal(&consumeable);
-        uthread_mutex_unlock(&mutex);
+        uthread_cond_signal(consumeable);
+        uthread_mutex_unlock(mutex);
   }
   return NULL;
 }
@@ -40,15 +40,15 @@ void* consumer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-    uthread_mutex_lock(&mutex);
+    uthread_mutex_lock(mutex);
         if(items==0){
             consumer_wait_count++;
-            uthread_cond_wait(&consumeable);
+            uthread_cond_wait(consumeable);
         }        
         items--;
         histogram[items]++;
-        uthread_cond_signal(&produceable);
-        uthread_mutex_unlock(&mutex);
+        uthread_cond_signal(produceable);
+        uthread_mutex_unlock(mutex);
   }
   return NULL;
 }
@@ -80,7 +80,6 @@ int main (int argc, char** argv) {
   printf ("producer_wait_count=%d\nconsumer_wait_count=%d\n", producer_wait_count, consumer_wait_count);
   printf ("items value histogram:\n");
   int sum=0;
-  int i;
   for (i = 0; i <= MAX_ITEMS; i++) {
     printf ("  items=%d, %d times\n", i, histogram [i]);
     sum += histogram [i];
