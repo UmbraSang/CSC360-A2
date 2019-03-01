@@ -190,6 +190,7 @@ void* agent (void* av) {
   pthread_mutex_lock (&a->mutex);
   int i;
     for (i = 0; i < NUM_ITERATIONS; i++) {
+        printf("\n\n");
       int r = random() % 3;
       signal_count [matching_smoker [r]] ++;
       int c = choices [r];
