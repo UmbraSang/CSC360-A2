@@ -65,8 +65,6 @@ struct threadArgs* createThreadArgs(struct Agent* a, enum Resource b){
 int matchAvail = 0;
 int paperAvail = 0;
 int tobaccoAvail = 0;
-pthread_mutex_t actorMutex    = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t resourceMutex = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_cond_t matchActor     = PTHREAD_COND_INITIALIZER;
 pthread_cond_t paperActor     = PTHREAD_COND_INITIALIZER;
@@ -139,7 +137,9 @@ void* resourceType(void* prepackage){
 void smokeIt(struct Agent* a, enum Resource type){
     printf("--Actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
-    sum=0;   
+    sum=0;
+    printf("Signaling smoke\n");
+    pthread_cond_signal(&a->smoke);
 }
 
 void* actor(void* prepackage){ //single mutex
@@ -166,8 +166,6 @@ void* actor(void* prepackage){ //single mutex
                  printf("Error has occured in ResourceType\n");
                  break;
         }
-        printf("Signaling smoke\n");
-        pthread_cond_signal(&a->smoke);
         pthread_mutex_unlock(&a->mutex);
     }
 }
