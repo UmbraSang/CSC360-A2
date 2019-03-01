@@ -29,7 +29,7 @@ struct threadArgs* createThreadArgs(int bufferSize){
 }
 
 void* producer (void* v) {
-  struct threadArgs* prepackage = v;
+  struct threadArgs* prepackage = (struct threadArgs*)v;
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
@@ -44,7 +44,7 @@ void* producer (void* v) {
 }
 
 void* consumer (void* v) {
-  struct threadArgs* prepackage = v;
+  struct threadArgs* prepackage = (struct threadArgs*)v;
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
