@@ -69,14 +69,14 @@ int main (int argc, char** argv) {
     int i;
   for(i=0; i<NUM_THREADS; i++){
       if(i%2==0){
-          pthread_create(&t[i], NULL, producer, params);
+          t[i]= uthread_create(producer, params);
       }else{
-          pthread_create(&t[i], NULL, consumer, params);
+          t[i]= uthread_create(consumer, params);
       }
   }
-
+  
   for(i=0; i<NUM_THREADS; i++){
-     pthread_join(t[i], NULL);
+     uthread_join(t[i], NULL);
   }
 
   printf ("items value histogram:\n");
