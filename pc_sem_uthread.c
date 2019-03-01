@@ -33,12 +33,12 @@ void* producer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-        uthread_sem_wait(&prepackage->produceable);
-        uthread_sem_wait(&prepackage->mutex);      
+        uthread_sem_wait(prepackage->produceable);
+        uthread_sem_wait(prepackage->mutex);      
         items++;
         histogram[items]++;
-        uthread_sem_signal(&prepackage->consumeable);
-        uthread_sem_signal(&prepackage->mutex);   
+        uthread_sem_signal(prepackage->consumeable);
+        uthread_sem_signal(prepackage->mutex);   
   }
   return NULL;
 }
@@ -48,12 +48,12 @@ void* consumer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-        uthread_sem_wait(&prepackage->consumeable);
-        uthread_sem_wait(&prepackage->mutex);      
+        uthread_sem_wait(prepackage->consumeable);
+        uthread_sem_wait(prepackage->mutex);      
         items--;
         histogram[items]++;
-        uthread_sem_signal(&prepackage->produceable);
-        uthread_sem_signal(&prepackage->mutex);
+        uthread_sem_signal(prepackage->produceable);
+        uthread_sem_signal(prepackage->mutex);
   }
   return NULL;
 }
