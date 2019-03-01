@@ -113,6 +113,7 @@ void* resourceType(void* prepackage){
     enum Resource type = package->type;
     printf("ResourceType %s Created\n", printEnum(type));
     while(1){
+        printf("into %s\n", printEnum(type));
         pthread_mutex_lock(&a->mutex);
         switch(type){
            case MATCH:
@@ -128,6 +129,7 @@ void* resourceType(void* prepackage){
                  printf("Error has occured in ResourceType\n");
                  break;
         }
+        printf("After %s Switch\n", printEnum(type));
         sum += type;
         actorChooser();
         pthread_mutex_unlock(&a->mutex);
