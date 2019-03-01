@@ -38,7 +38,7 @@ void* consumer (void* v) {
     // TODO
         sem_wait(&consumeable);
         sem_wait(&mutex);      
-        items++;
+        items--;
         histogram[items]++;
         sem_post(&produceable);
         sem_post(&mutex);
