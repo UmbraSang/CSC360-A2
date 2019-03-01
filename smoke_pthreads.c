@@ -98,8 +98,25 @@ void* resourceType(void* prepackage){
     }
 }
 
+char* printEnum(enum Resource type){
+    switch (type){
+        case MATCH:
+            return "match";
+            break;
+        case PAPER:
+            return "paper";
+            break;
+        case TOBACCO:
+            return "tobacco";
+            break;
+        default:
+            return "PrintEnum Failed\n";
+            break;
+    }
+}
+
 void smokeIt(struct Agent* a, enum Resource type){
-    printf("actor %s Smoked\n", type);
+    printf("actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
     pthread_cond_signal(&a->smoke);
     matchAvail = 0;
