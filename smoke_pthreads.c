@@ -72,7 +72,6 @@ pthread_mutex_t tobaccoMutex= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t actorsWake   = PTHREAD_COND_INITIALIZER;
 
 void* resourceType(void* prepackage){
-    printf("resourceType Created\n");
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
@@ -94,12 +93,13 @@ void* resourceType(void* prepackage){
                 printf("Error has occured in ResourceType\n");
                 break;
         }
+        printf("match: %d, paper: %d, tobacco: %d,\n", matchAvail, paperAvail, tobaccoAvail);
         pthread_cond_broadcast(&actorsWake);
     }
 }
 
 void smokeIt(struct Agent* a, enum Resource type){
-    printf("Smoked\n");
+    printf("actor %s Smoked\n", type);
     smoke_count[type]++;
     pthread_cond_signal(&a->smoke);
     matchAvail = 0;
@@ -179,11 +179,8 @@ void* agent (void* av) {
 }
 
 int main (int argc, char** argv) {
-  //uthread_init (7);
   pthread_t t[7];
   struct Agent*  a = createAgent();
-  // TODO
-    pthread_create(&t[0], NULL, agent, a);
     int i;
     // for(i=1; i<=3; i++){
     //     pthread_create(&t[i], NULL, actor, createThreadArgs(a, Resource[i]));
@@ -197,13 +194,14 @@ int main (int argc, char** argv) {
     pthread_create(&t[4], NULL, resourceType, createThreadArgs(a, MATCH));
     pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
-
-    
+    pthread_create(&t[0], NULL, agent, a);
   
+    printf("Joining Threads\n");
   for(i=0; i<7; i++){
     pthread_join(t[i], NULL);
   }
 
+    printf("Beginning Asserts\n");
   assert (signal_count [MATCH]   == smoke_count [MATCH]);
   assert (signal_count [PAPER]   == smoke_count [PAPER]);
   assert (signal_count [TOBACCO] == smoke_count [TOBACCO]);
