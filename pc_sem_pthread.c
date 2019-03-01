@@ -5,6 +5,7 @@
 #include <semaphore.h>
 
 #define MAX_ITEMS 10
+#define NUM_THREADS 4
 const int NUM_ITERATIONS = 200;
 const int NUM_CONSUMERS  = 2;
 const int NUM_PRODUCERS  = 2;
