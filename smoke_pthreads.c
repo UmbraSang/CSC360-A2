@@ -94,18 +94,20 @@ void actorChooser(){
     switch (sum){
         case 6:
             pthread_cond_signal(&matchActor);
+            printf("Actor Match chosen\n");
             break;
         case 5:
             pthread_cond_signal(&paperActor);
+            printf("Actor Paper chosen\n");
             break;
         case 3:
             pthread_cond_signal(&tobaccoActor);
+            printf("Actor Tobacco chosen\n");
             break;
         default:
             printf("Error has occured in Actor\n");
             break;
         }
-        printf("Actor %s chosen\n", printEnum(type));
 }
 
 void* resourceType(void* prepackage){
