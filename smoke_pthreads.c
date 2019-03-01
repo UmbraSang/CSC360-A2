@@ -89,7 +89,7 @@ char* printEnum(enum Resource type){
     }
 }
 
-actorChooser(){
+void actorChooser(){
         printf("Sum: %d\n", sum);
         switch (sum){
             case 6:
