@@ -109,7 +109,7 @@ void* resourceType(void* prepackage){
                 break;
         }
         sum += type;
-        printf("Sum: %d", sum);
+        printf("Sum: %d\n", sum);
         pthread_cond_broadcast(&actorsWake);
         pthread_mutex_unlock(&resourceMutex);
 
