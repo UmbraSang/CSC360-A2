@@ -194,17 +194,21 @@ void* agent (void* av) {
       signal_count [matching_smoker [r]] ++;
       int c = choices [r];
       if (c & MATCH) {
+          printf("match available\n")
         VERBOSE_PRINT ("match available\n");
         pthread_cond_signal (&a->match);
       }
       if (c & PAPER) {
+          printf("paper available\n")
         VERBOSE_PRINT ("paper available\n");
         pthread_cond_signal (&a->paper);
       }
       if (c & TOBACCO) {
+          printf("tobacco available\n")
         VERBOSE_PRINT ("tobacco available\n");
         pthread_cond_signal (&a->tobacco);
       }
+          printf("agent is waiting for smoker to smoke\n")
       VERBOSE_PRINT ("agent is waiting for smoker to smoke\n");
       pthread_cond_wait (&a->smoke, &a->mutex);
     }
