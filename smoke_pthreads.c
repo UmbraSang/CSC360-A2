@@ -105,7 +105,6 @@ void actorChooser(){
             printf("Actor Tobacco chosen\n");
             break;
         default:
-            printf("Error has occured in Actor\n");
             break;
         }
 }
