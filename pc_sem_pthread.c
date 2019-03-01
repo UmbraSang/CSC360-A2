@@ -26,8 +26,7 @@ void* producer (void* v) {
         items++;
         histogram[items]++;
         sem_post(&consumeable);
-        sem_post(&mutex);
-        
+        sem_post(&mutex);   
   }
   return NULL;
 }
@@ -52,7 +51,7 @@ int main (int argc, char** argv) {
   // TODO: Create Threads and Join
     sem_init(&mutex, 0, 1);
     sem_init(&consumeable, 0, 0);
-    sem_init(&produceable, 0, 10);
+    sem_init(&produceable, 0, MAX_ITEMS);
 
     int i;
   for(i=0; i<NUM_THREADS; i++){
