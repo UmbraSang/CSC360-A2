@@ -109,8 +109,9 @@ void* resourceType(void* prepackage){
                 break;
         }
         sum += type;
-        pthread_mutex_unlock(&resourceMutex);
         printf("Sum: %d", sum);
+        pthread_cond_broadcast(&actorsWake);
+        pthread_mutex_unlock(&resourceMutex);
 
 
         // switch (type){
@@ -137,7 +138,7 @@ void* resourceType(void* prepackage){
         //         break;
         // }
         // printf("match: %d, paper: %d, tobacco: %d,\n", matchAvail, paperAvail, tobaccoAvail);
-        pthread_cond_broadcast(&actorsWake);
+        // pthread_cond_broadcast(&actorsWake);
     }
 }
 
@@ -145,9 +146,10 @@ void smokeIt(struct Agent* a, enum Resource type){
     printf("actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
     pthread_cond_signal(&a->smoke);
-    matchAvail = 0;
-    paperAvail = 0;
-    tobaccoAvail = 0;
+    sum=0;
+    // matchAvail = 0;
+    // paperAvail = 0;
+    // tobaccoAvail = 0;
 }
 
 void* actor(void* prepackage){
@@ -178,7 +180,6 @@ void* actor(void* prepackage){
                 printf("Error has occured in Actor\n");
                 break;
         }
-        sum=0;
         
         // switch (type){
         //     case MATCH:
