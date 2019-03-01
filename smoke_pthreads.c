@@ -97,16 +97,16 @@ void* resourceType(void* prepackage){
     enum Resource type = package->type;
     printf("ResourceType %s Created\n", printEnum(type));
     while(1){
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&a->mutex);
         switch(type){
            case MATCH:
-                pthread_cond_wait(&a->match, &mutex);
+                pthread_cond_wait(&a->match, &a->mutex);
                 break;
             case PAPER:
-                pthread_cond_wait(&a->paper, &mutex);
+                pthread_cond_wait(&a->paper, &a->mutex);
                 break;
             case TOBACCO:
-                pthread_cond_wait(&a->tobacco, &mutex);
+                pthread_cond_wait(&a->tobacco, &a->mutex);
                 break;
             default:
                  printf("Error has occured in ResourceType\n");
@@ -116,7 +116,7 @@ void* resourceType(void* prepackage){
         printf("Sum: %d\n", sum);
         printf("Broadcasting actorsWake\n");
         pthread_cond_broadcast(&actorsWake);
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&a->mutex);
 
 
         // switch (type){
@@ -164,9 +164,9 @@ void* actor(void* prepackage){
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     while(1){
-        pthread_mutex_lock(&mutex);
-        pthread_cond_wait(&actorsWake, &mutex);
-        pthread_cond_wait(&actorsWake, &mutex);
+        pthread_mutex_lock(&a->mutex);
+        pthread_cond_wait(&actorsWake, &a->mutex);
+        pthread_cond_wait(&actorsWake, &a->mutex);
         printf("Actor double awake\n");
         switch (type){
             case MATCH:
@@ -209,7 +209,7 @@ void* actor(void* prepackage){
         //         printf("Error has occured in Actor\n");
         //         break;
         // }
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&a->mutex);
     }
 }
 
