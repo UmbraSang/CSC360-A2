@@ -90,21 +90,22 @@ char* printEnum(enum Resource type){
 }
 
 void actorChooser(){
-        printf("Sum: %d\n", sum);
-        switch (sum){
-            case 6:
-                pthread_cond_signal(&matchActor);
-                break;
-            case 5:
-                pthread_cond_signal(&paperActor);
-                break;
-            case 3:
-                pthread_cond_signal(&tobaccoActor);
-                break;
-            default:
-                printf("Error has occured in Actor\n");
-                break;
+    printf("Sum: %d\n", sum);
+    switch (sum){
+        case 6:
+            pthread_cond_signal(&matchActor);
+            break;
+        case 5:
+            pthread_cond_signal(&paperActor);
+            break;
+        case 3:
+            pthread_cond_signal(&tobaccoActor);
+            break;
+        default:
+            printf("Error has occured in Actor\n");
+            break;
         }
+        printf("Actor %s chosen\n", printEnum(type));
 }
 
 void* resourceType(void* prepackage){
@@ -147,7 +148,6 @@ void* actor(void* prepackage){ //single mutex
     enum Resource type = package->type;
     while(1){
         pthread_mutex_lock(&a->mutex);
-        printf("Actor %s double awake\n", printEnum(type));
         switch(type){
            case MATCH:
                 pthread_cond_wait(&matchActor, &a->mutex);
@@ -205,8 +205,6 @@ void* agent (void* av) {
         pthread_cond_signal (&a->tobacco);
       }
       VERBOSE_PRINT ("agent is waiting for smoker to smoke\n");
-      pthread_cond_wait (&a->smoke, &a->mutex);
-      pthread_cond_wait (&a->smoke, &a->mutex);
       pthread_cond_wait (&a->smoke, &a->mutex);
     }
   pthread_mutex_unlock (&a->mutex);
