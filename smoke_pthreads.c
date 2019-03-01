@@ -107,6 +107,9 @@ void* resourceType(void* prepackage){
             case TOBACCO:
                 pthread_cond_wait(&a->tobacco, &resourceMutex);
                 break;
+            default:
+                 printf("Error has occured in ResourceType\n");
+                 break;
         }
         sum += type;
         printf("Sum: %d\n", sum);
@@ -161,6 +164,7 @@ void* actor(void* prepackage){
     enum Resource type = package->type;
     while(1){
         pthread_mutex_lock(&actorMutex);
+        pthread_cond_wait(&actorsWake, &actorMutex);
         pthread_cond_wait(&actorsWake, &actorMutex);
         switch (type){
             case MATCH:
