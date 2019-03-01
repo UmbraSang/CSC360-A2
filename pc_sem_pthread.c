@@ -21,12 +21,13 @@ void* producer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-        //sem_wait(&produceable);
+        sem_wait(&produceable);
         sem_wait(&mutex);      
         items++;
         histogram[items]++;
+        sem_post(&consumeable);
         sem_post(&mutex);
-        //sem_post(&consumeable);
+        
   }
   return NULL;
 }
@@ -35,12 +36,12 @@ void* consumer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-        //sem_wait(&consumeable);
+        sem_wait(&consumeable);
         sem_wait(&mutex);      
         items++;
         histogram[items]++;
+        sem_post(&produceable);
         sem_post(&mutex);
-        //sem_post(&produceable);
   }
   return NULL;
 }
@@ -50,8 +51,8 @@ int main (int argc, char** argv) {
 
   // TODO: Create Threads and Join
     sem_init(&mutex, 0, 1);
-    sem_init(&consumeable, 0, 10);
-    sem_init(&produceable, 0, 0);
+    sem_init(&consumeable, 0, 0);
+    sem_init(&produceable, 0, 10);
 
     int i;
   for(i=0; i<NUM_THREADS; i++){
