@@ -115,6 +115,8 @@ void* resourceType(void* prepackage){
     while(1){
         printf("into %s\n", printEnum(type));
         pthread_mutex_lock(&a->mutex);
+        sum += type;
+        actorChooser();
         switch(type){
            case MATCH:
                 pthread_cond_wait(&a->match, &a->mutex);
@@ -130,8 +132,7 @@ void* resourceType(void* prepackage){
                  break;
         }
         printf("After %s Switch\n", printEnum(type));
-        sum += type;
-        actorChooser();
+        
         pthread_mutex_unlock(&a->mutex);
     }
 }
@@ -233,10 +234,10 @@ int main (int argc, char** argv) {
     pthread_create(&t[4], NULL, resourceType, createThreadArgs(a, MATCH));
     pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
-    pthread_create(&t[0], NULL, agent, a);
+    
     printf("Threads Created\n");
 
-    pthread_join(t[0], NULL);
+    pthread_join(pthread_create(&t[0], NULL, agent, a), NULL);
     printf("Joined Threads\n");
 
     printf("Beginning Asserts\n");
