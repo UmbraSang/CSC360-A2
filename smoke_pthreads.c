@@ -23,6 +23,7 @@ struct Agent {
 };
 
 struct Agent* createAgent() {
+    printf("Agent Created\n");
   struct Agent* agent = malloc (sizeof (struct Agent));
   agent->mutex  = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
   
@@ -71,6 +72,7 @@ pthread_mutex_t tobaccoMutex= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t actorsWake   = PTHREAD_COND_INITIALIZER;
 
 void* resourceType(void* prepackage){
+    printf("resourceType Created\n");
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
@@ -97,6 +99,7 @@ void* resourceType(void* prepackage){
 }
 
 void smokeIt(struct Agent* a, enum Resource type){
+    printf("Smoked\n");
     smoke_count[type]++;
     pthread_cond_signal(&a->smoke);
     matchAvail = 0;
@@ -105,6 +108,7 @@ void smokeIt(struct Agent* a, enum Resource type){
 }
 
 void* actor(void* prepackage){
+    printf("Actor Created\n");
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
@@ -186,6 +190,7 @@ int main (int argc, char** argv) {
     //     pthread_create(&t[i+3], NULL, resourceType, createThreadArgs(a, Resource[i]));
     // }
     
+    printf("Creating Threads\n");
     pthread_create(&t[1], NULL, actor, createThreadArgs(a, MATCH));
     pthread_create(&t[2], NULL, actor, createThreadArgs(a, PAPER));
     pthread_create(&t[3], NULL, actor, createThreadArgs(a, TOBACCO));
