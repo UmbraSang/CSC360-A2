@@ -71,6 +71,23 @@ pthread_mutex_t paperMutex  = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t tobaccoMutex= PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t actorsWake   = PTHREAD_COND_INITIALIZER;
 
+char* printEnum(enum Resource type){
+    switch (type){
+        case MATCH:
+            return "match";
+            break;
+        case PAPER:
+            return "paper";
+            break;
+        case TOBACCO:
+            return "tobacco";
+            break;
+        default:
+            return "PrintEnum Failed\n";
+            break;
+    }
+}
+
 void* resourceType(void* prepackage){
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
@@ -102,23 +119,6 @@ void* resourceType(void* prepackage){
         }
         printf("match: %d, paper: %d, tobacco: %d,\n", matchAvail, paperAvail, tobaccoAvail);
         pthread_cond_broadcast(&actorsWake);
-    }
-}
-
-char* printEnum(enum Resource type){
-    switch (type){
-        case MATCH:
-            return "match";
-            break;
-        case PAPER:
-            return "paper";
-            break;
-        case TOBACCO:
-            return "tobacco";
-            break;
-        default:
-            return "PrintEnum Failed\n";
-            break;
     }
 }
 
