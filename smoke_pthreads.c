@@ -213,10 +213,11 @@ int main (int argc, char** argv) {
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
     pthread_create(&t[0], NULL, agent, a);
   
-    printf("Joining Threads\n");
+    printf("Threads Created\n");
   for(i=0; i<7; i++){
     pthread_join(t[i], NULL);
   }
+  printf("Joined Threads\n");
 
     printf("Beginning Asserts\n");
   assert (signal_count [MATCH]   == smoke_count [MATCH]);
