@@ -104,13 +104,13 @@ void* resourceType(void* prepackage){
             case PAPER:
                 pthread_cond_wait(&a->paper, &resourceMutex);
                 break;
-            case TOBACCO;
+            case TOBACCO:
                 pthread_cond_wait(&a->tobacco, &resourceMutex);
                 break;
         }
-        Sum += type;
+        sum += type;
         pthread_mutex_unlock(&resourceMutex);
-        printf("Sum: %d", Sum);
+        printf("Sum: %d", sum);
 
 
         // switch (type){
