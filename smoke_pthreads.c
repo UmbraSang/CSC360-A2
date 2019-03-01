@@ -117,7 +117,7 @@ void* resourceType(void* prepackage){
 }
 
 void smokeIt(struct Agent* a, enum Resource type){
-    printf("!!Actor %s Smoked\n", printEnum(type));
+    printf("--Actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
     sum=0;
     printf("Signaling smoke\n");
@@ -192,6 +192,8 @@ void* agent (void* av) {
         pthread_cond_signal (&a->tobacco);
       }
       VERBOSE_PRINT ("agent is waiting for smoker to smoke\n");
+      pthread_cond_wait (&a->smoke, &a->mutex);
+      pthread_cond_wait (&a->smoke, &a->mutex);
       pthread_cond_wait (&a->smoke, &a->mutex);
     }
   pthread_mutex_unlock (&a->mutex);
