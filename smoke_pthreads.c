@@ -110,7 +110,7 @@ void* resourceType(void* prepackage){
         }
         sum += type;
         printf("Sum: %d\n", sum);
-        printf("Broadcasting actorsWake");
+        printf("Broadcasting actorsWake\n");
         pthread_cond_broadcast(&actorsWake);
         pthread_mutex_unlock(&resourceMutex);
 
@@ -146,7 +146,7 @@ void* resourceType(void* prepackage){
 void smokeIt(struct Agent* a, enum Resource type){
     printf("actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
-    printf("Signaling smoke");
+    printf("Signaling smoke\n");
     pthread_cond_signal(&a->smoke);
     sum=0;
     // matchAvail = 0;
