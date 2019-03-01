@@ -111,7 +111,7 @@ void* resourceType(void* prepackage){
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
-    printf("ResourceType %s Created\n", printEnum(type));
+   // printf("ResourceType %s Created\n", printEnum(type));
     while(1){
         printf("into %s\n", printEnum(type));
         pthread_mutex_lock(&a->mutex);
@@ -131,7 +131,7 @@ void* resourceType(void* prepackage){
                  printf("Error has occured in ResourceType\n");
                  break;
         }
-        printf("After %s Switch\n", printEnum(type));
+        //printf("After %s Switch\n", printEnum(type));
         
         pthread_mutex_unlock(&a->mutex);
     }
@@ -141,12 +141,12 @@ void smokeIt(struct Agent* a, enum Resource type){
     printf("--Actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
     sum=0;
-    printf("Signaling smoke\n");
+    //printf("Signaling smoke\n");
     pthread_cond_signal(&a->smoke);
 }
 
 void* actor(void* prepackage){ //single mutex
-    printf("Actor Created\n");
+   // printf("Actor Created\n");
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
@@ -183,7 +183,7 @@ void* actor(void* prepackage){ //single mutex
  * wait for a smoker to smoke.
  */
 void* agent (void* av) {
-  printf("Agent Created\n");
+ // printf("Agent Created\n");
   struct Agent* a = av;
   static const int choices[]         = {MATCH|PAPER, MATCH|TOBACCO, PAPER|TOBACCO};
   static const int matching_smoker[] = {TOBACCO,     PAPER,         MATCH};
@@ -196,21 +196,21 @@ void* agent (void* av) {
       signal_count [matching_smoker [r]] ++;
       int c = choices [r];
       if (c & MATCH) {
-          printf("match available\n")
+        //  printf("match available\n")
         VERBOSE_PRINT ("match available\n");
         pthread_cond_signal (&a->match);
       }
       if (c & PAPER) {
-          printf("paper available\n")
+        //  printf("paper available\n")
         VERBOSE_PRINT ("paper available\n");
         pthread_cond_signal (&a->paper);
       }
       if (c & TOBACCO) {
-          printf("tobacco available\n")
+         // printf("tobacco available\n")
         VERBOSE_PRINT ("tobacco available\n");
         pthread_cond_signal (&a->tobacco);
       }
-          printf("agent is waiting for smoker to smoke\n")
+          //printf("agent is waiting for smoker to smoke\n")
       VERBOSE_PRINT ("agent is waiting for smoker to smoke\n");
       pthread_cond_wait (&a->smoke, &a->mutex);
     }
