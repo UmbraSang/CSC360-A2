@@ -42,6 +42,7 @@ struct Agent* createAgent() {
  */
 enum Resource            {    MATCH = 1, PAPER = 2,   TOBACCO = 4};
 char* resource_name [] = {"", "match",   "paper", "", "tobacco"};
+int sum = 0;
 
 int signal_count [5];  // # of times resource signalled
 int smoke_count  [5];  // # of times smoker with resource smoked
@@ -65,11 +66,12 @@ struct threadArgs* createThreadArgs(struct Agent* a, enum Resource b){
 int matchAvail = 0;
 int paperAvail = 0;
 int tobaccoAvail = 0;
-pthread_mutex_t actorMutex  = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t matchMutex  = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t paperMutex  = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t tobaccoMutex= PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t actorsWake   = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t actorMutex    = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t matchMutex    = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t paperMutex    = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t tobaccoMutex  = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t resourceMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t actorsWake     = PTHREAD_COND_INITIALIZER;
 
 char* printEnum(enum Resource type){
     switch (type){
@@ -94,30 +96,47 @@ void* resourceType(void* prepackage){
     enum Resource type = package->type;
     printf("ResourceType %s Created\n", printEnum(type));
     while(1){
-        switch (type){
-            case MATCH:
-                pthread_mutex_lock(&matchMutex);
-                pthread_cond_wait(&a->match, &matchMutex);
-                matchAvail=1;
-                pthread_mutex_unlock(&matchMutex);
+        pthread_mutex_lock(&resourceMutex);
+        switch(type){
+           case MATCH:
+                pthread_cond_wait(&a->match, &resourceMutex);
                 break;
             case PAPER:
-                pthread_mutex_lock(&paperMutex);
-                pthread_cond_wait(&a->paper, &paperMutex);
-                paperAvail=1;
-                pthread_mutex_unlock(&paperMutex);
+                pthread_cond_wait(&a->paper, &resourceMutex);
                 break;
-            case TOBACCO:
-                pthread_mutex_lock(&tobaccoMutex);
-                pthread_cond_wait(&a->tobacco, &tobaccoMutex);
-                tobaccoAvail=1;
-                pthread_mutex_unlock(&paperMutex);
-                break;
-            default:
-                printf("Error has occured in ResourceType\n");
+            case TOBACCO;
+                pthread_cond_wait(&a->tobacco, &resourceMutex);
                 break;
         }
-        printf("match: %d, paper: %d, tobacco: %d,\n", matchAvail, paperAvail, tobaccoAvail);
+        Sum += type;
+        pthread_mutex_unlock(&resourceMutex);
+        printf("Sum: %d", Sum);
+
+
+        // switch (type){
+        //     case MATCH:
+        //         pthread_mutex_lock(&resourceMutex);
+        //         pthread_cond_wait(&a->match, &resourceMutex);
+        //         Sum += type;
+        //         pthread_mutex_unlock(&resourceMutex);
+        //         break;
+        //     case PAPER:
+        //         pthread_mutex_lock(&resourceMutex);
+        //         pthread_cond_wait(&a->paper, &resourceMutex);
+        //         paperAvail=1;
+        //         pthread_mutex_unlock(&resourceMutex);
+        //         break;
+        //     case TOBACCO:
+        //         pthread_mutex_lock(&resourceMutex);
+        //         pthread_cond_wait(&a->tobacco, &resourceMutex);
+        //         tobaccoAvail=1;
+        //         pthread_mutex_unlock(&resourceMutex);
+        //         break;
+        //     default:
+        //         printf("Error has occured in ResourceType\n");
+        //         break;
+        // }
+        // printf("match: %d, paper: %d, tobacco: %d,\n", matchAvail, paperAvail, tobaccoAvail);
         pthread_cond_broadcast(&actorsWake);
     }
 }
@@ -141,17 +160,17 @@ void* actor(void* prepackage){
         pthread_cond_wait(&actorsWake, &actorMutex);
         switch (type){
             case MATCH:
-                if(paperAvail && tobaccoAvail){
+                if(sum==6){
                     smokeIt(a, type);
                 }
                 break;
             case PAPER:
-                if(matchAvail && tobaccoAvail){
+                if(sum==5){
                     smokeIt(a, type);
                 }
                 break;
             case TOBACCO:
-                if(paperAvail && matchAvail){
+                if(sum==3){
                     smokeIt(a, type);
                 }
                 break;
@@ -159,6 +178,28 @@ void* actor(void* prepackage){
                 printf("Error has occured in Actor\n");
                 break;
         }
+        sum=0;
+        
+        // switch (type){
+        //     case MATCH:
+        //         if(paperAvail && tobaccoAvail){
+        //             smokeIt(a, type);
+        //         }
+        //         break;
+        //     case PAPER:
+        //         if(matchAvail && tobaccoAvail){
+        //             smokeIt(a, type);
+        //         }
+        //         break;
+        //     case TOBACCO:
+        //         if(paperAvail && matchAvail){
+        //             smokeIt(a, type);
+        //         }
+        //         break;
+        //     default:
+        //         printf("Error has occured in Actor\n");
+        //         break;
+        // }
         pthread_mutex_unlock(&actorMutex);
     }
 }
