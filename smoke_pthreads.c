@@ -96,22 +96,22 @@ void* resourceType(void* prepackage){
     while(1){
         switch (type){
             case MATCH:
-                //pthread_mutex_lock(&matchMutex);
+                pthread_mutex_lock(&matchMutex);
                 pthread_cond_wait(&a->match, &matchMutex);
                 matchAvail=1;
-                //pthread_mutex_lock(&matchMutex);
+                pthread_mutex_unlock(&matchMutex);
                 break;
             case PAPER:
-                //pthread_mutex_lock(&paperMutex);
-                pthread_cond_wait(&a->paper, &matchMutex);
+                pthread_mutex_lock(&paperMutex);
+                pthread_cond_wait(&a->paper, &paperMutex);
                 paperAvail=1;
-               // pthread_mutex_lock(&paperMutex);
+                pthread_mutex_unlock(&paperMutex);
                 break;
             case TOBACCO:
-                //pthread_mutex_lock(&tobaccoMutex);
-                pthread_cond_wait(&a->tobacco, &matchMutex);
+                pthread_mutex_lock(&tobaccoMutex);
+                pthread_cond_wait(&a->tobacco, &tobaccoMutex);
                 tobaccoAvail=1;
-                //pthread_mutex_lock(&paperMutex);
+                pthread_mutex_unlock(&paperMutex);
                 break;
             default:
                 printf("Error has occured in ResourceType\n");
