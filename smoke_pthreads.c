@@ -119,10 +119,7 @@ void* resourceType(void* prepackage){
 void smokeIt(struct Agent* a, enum Resource type){
     printf("--Actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
-    sum=0;
-    printf("Signaling smoke\n");
-    pthread_cond_signal(&a->smoke);
-    
+    sum=0;   
 }
 
 void* actor(void* prepackage){
@@ -155,6 +152,8 @@ void* actor(void* prepackage){
                 printf("Error has occured in Actor\n");
                 break;
         }
+        printf("Signaling smoke\n");
+        pthread_cond_signal(&a->smoke);
         pthread_mutex_unlock(&actorMutex);
     }
 }
