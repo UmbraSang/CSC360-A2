@@ -110,6 +110,7 @@ void* resourceType(void* prepackage){
         }
         sum += type;
         printf("Sum: %d\n", sum);
+        printf("Broadcasting actorsWake");
         pthread_cond_broadcast(&actorsWake);
         pthread_mutex_unlock(&resourceMutex);
 
@@ -145,6 +146,7 @@ void* resourceType(void* prepackage){
 void smokeIt(struct Agent* a, enum Resource type){
     printf("actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
+    printf("Signaling smoke");
     pthread_cond_signal(&a->smoke);
     sum=0;
     // matchAvail = 0;
@@ -261,12 +263,10 @@ int main (int argc, char** argv) {
     pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
     pthread_create(&t[0], NULL, agent, a);
-  
     printf("Threads Created\n");
-  for(i=0; i<7; i++){
-    pthread_join(t[i], NULL);
-  }
-  printf("Joined Threads\n");
+
+    pthread_join(t[0], NULL);
+    printf("Joined Threads\n");
 
     printf("Beginning Asserts\n");
   assert (signal_count [MATCH]   == smoke_count [MATCH]);
