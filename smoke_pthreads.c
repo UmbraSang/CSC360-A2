@@ -166,6 +166,7 @@ void* actor(void* prepackage){
         pthread_mutex_lock(&actorMutex);
         pthread_cond_wait(&actorsWake, &actorMutex);
         pthread_cond_wait(&actorsWake, &actorMutex);
+        printf("Actor double awake\n");
         switch (type){
             case MATCH:
                 if(sum==6){
