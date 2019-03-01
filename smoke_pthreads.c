@@ -24,12 +24,12 @@ struct Agent {
 
 struct Agent* createAgent() {
   struct Agent* agent = malloc (sizeof (struct Agent));
-  agent->mutex = PTHREAD_MUTEX_INITIALIZER;
+  agent->mutex  = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
   
-  agent->paper=PTHREAD_COND_INITIALIZER;
-  agent->match=PTHREAD_COND_INITIALIZER;
-  agent->tobacco=PTHREAD_COND_INITIALIZER;
-  agent->smoke=PTHREAD_COND_INITIALIZER;
+  agent->paper  = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
+  agent->match  = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
+  agent->tobacco= (pthread_cond_t)PTHREAD_COND_INITIALIZER;
+  agent->smoke  = (pthread_cond_t)PTHREAD_COND_INITIALIZER;
   
   return agent;
 }
