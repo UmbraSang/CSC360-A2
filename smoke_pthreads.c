@@ -23,7 +23,6 @@ struct Agent {
 };
 
 struct Agent* createAgent() {
-    printf("Agent Created\n");
   struct Agent* agent = malloc (sizeof (struct Agent));
   agent->mutex  = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
   
@@ -68,7 +67,10 @@ int paperAvail = 0;
 int tobaccoAvail = 0;
 pthread_mutex_t actorMutex    = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t resourceMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t actorsWake     = PTHREAD_COND_INITIALIZER;
+
+pthread_cond_t matchActor     = PTHREAD_COND_INITIALIZER;
+pthread_cond_t paperActor     = PTHREAD_COND_INITIALIZER;
+pthread_cond_t tobaccoActor   = PTHREAD_COND_INITIALIZER;
 
 char* printEnum(enum Resource type){
     switch (type){
@@ -87,32 +89,48 @@ char* printEnum(enum Resource type){
     }
 }
 
+actorChooser(){
+        printf("Sum: %d\n", sum);
+        switch (sum){
+            case 6:
+                pthread_cond_signal(&matchActor);
+                break;
+            case 5:
+                pthread_cond_signal(&paperActor);
+                break;
+            case 3:
+                pthread_cond_signal(&tobaccoActor);
+                break;
+            default:
+                printf("Error has occured in Actor\n");
+                break;
+        }
+}
+
 void* resourceType(void* prepackage){
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     printf("ResourceType %s Created\n", printEnum(type));
     while(1){
-        pthread_mutex_lock(&resourceMutex);
+        pthread_mutex_lock(&a->mutex);
         switch(type){
            case MATCH:
-                pthread_cond_wait(&a->match, &resourceMutex);
+                pthread_cond_wait(&a->match, &a->mutex);
                 break;
             case PAPER:
-                pthread_cond_wait(&a->paper, &resourceMutex);
+                pthread_cond_wait(&a->paper, &a->mutex);
                 break;
             case TOBACCO:
-                pthread_cond_wait(&a->tobacco, &resourceMutex);
+                pthread_cond_wait(&a->tobacco, &a->mutex);
                 break;
             default:
                  printf("Error has occured in ResourceType\n");
                  break;
         }
         sum += type;
-        printf("Sum: %d\n", sum);
-        printf("Broadcasting actorsWake\n");
-        pthread_cond_broadcast(&actorsWake);
-        pthread_mutex_unlock(&resourceMutex);
+        actorChooser();
+        pthread_mutex_unlock(&a->mutex);
     }
 }
 
@@ -122,39 +140,34 @@ void smokeIt(struct Agent* a, enum Resource type){
     sum=0;   
 }
 
-void* actor(void* prepackage){
+void* actor(void* prepackage){ //single mutex
     printf("Actor Created\n");
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     while(1){
-        pthread_mutex_lock(&actorMutex);
-        pthread_cond_wait(&actorsWake, &actorMutex);
-        pthread_cond_wait(&actorsWake, &actorMutex);
+        pthread_mutex_lock(&a->mutex);
         printf("Actor %s double awake\n", printEnum(type));
-        switch (type){
-            case MATCH:
-                if(sum==6){
-                    smokeIt(a, type);
-                }
+        switch(type){
+           case MATCH:
+                pthread_cond_wait(&matchActor, &a->mutex);
+                smokeIt(a, type);
                 break;
             case PAPER:
-                if(sum==5){
-                    smokeIt(a, type);
-                }
+                pthread_cond_wait(&paperActor, &a->mutex);
+                smokeIt(a, type);
                 break;
             case TOBACCO:
-                if(sum==3){
-                    smokeIt(a, type);
-                }
+                pthread_cond_wait(&tobaccoActor, &a->mutex);
+                smokeIt(a, type);
                 break;
             default:
-                printf("Error has occured in Actor\n");
-                break;
+                 printf("Error has occured in ResourceType\n");
+                 break;
         }
         printf("Signaling smoke\n");
         pthread_cond_signal(&a->smoke);
-        pthread_mutex_unlock(&actorMutex);
+        pthread_mutex_unlock(&a->mutex);
     }
 }
 
@@ -168,6 +181,7 @@ void* actor(void* prepackage){
  * wait for a smoker to smoke.
  */
 void* agent (void* av) {
+  printf("Agent Created\n");
   struct Agent* a = av;
   static const int choices[]         = {MATCH|PAPER, MATCH|TOBACCO, PAPER|TOBACCO};
   static const int matching_smoker[] = {TOBACCO,     PAPER,         MATCH};
