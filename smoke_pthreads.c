@@ -117,7 +117,7 @@ void* resourceType(void* prepackage){
 }
 
 void smokeIt(struct Agent* a, enum Resource type){
-    printf("actor %s Smoked\n", printEnum(type));
+    printf("!!Actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
     sum=0;
     printf("Signaling smoke\n");
@@ -134,7 +134,7 @@ void* actor(void* prepackage){
         pthread_mutex_lock(&actorMutex);
         pthread_cond_wait(&actorsWake, &actorMutex);
         pthread_cond_wait(&actorsWake, &actorMutex);
-        printf("Actor double awake\n");
+        printf("Actor %s double awake\n", printEnum(type));
         switch (type){
             case MATCH:
                 if(sum==6){
