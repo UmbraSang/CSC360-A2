@@ -12,8 +12,8 @@ const int NUM_PRODUCERS  = 2;
 
 int histogram [MAX_ITEMS+1]; // histogram [i] == # of times list stored i items
 sem_t mutex;
-sem_t full;
-sem_t empty;
+sem_t consumeable;
+sem_t produceable;
 
 int items = 0;
 
@@ -21,12 +21,12 @@ void* producer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-        sem_wait(&empty);
+        //sem_wait(&produceable);
         sem_wait(&mutex);      
         items++;
         histogram[items]++;
         sem_post(&mutex);
-        sem_post(&full);
+        //sem_post(&consumeable);
   }
   return NULL;
 }
@@ -35,12 +35,12 @@ void* consumer (void* v) {
   int i;
   for (i=0; i<NUM_ITERATIONS; i++) {
     // TODO
-        sem_wait(&full);
+        //sem_wait(&consumeable);
         sem_wait(&mutex);      
         items++;
         histogram[items]++;
         sem_post(&mutex);
-        sem_post(&empty);
+        //sem_post(&produceable);
   }
   return NULL;
 }
@@ -50,8 +50,8 @@ int main (int argc, char** argv) {
 
   // TODO: Create Threads and Join
     sem_init(&mutex, 0, 1);
-    sem_init(&full, 0, 0);
-    sem_init(&empty, 0, MAX_ITEMS);
+    sem_init(&consumeable, 0, 10);
+    sem_init(&produceable, 0, 0);
 
     int i;
   for(i=0; i<NUM_THREADS; i++){
