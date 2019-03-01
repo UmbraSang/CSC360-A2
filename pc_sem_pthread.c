@@ -3,7 +3,6 @@
 #include <assert.h>
 #include "pthread.h"
 #include <semaphore.h>
-#include "uthread_sem.h"
 
 #define MAX_ITEMS 10
 const int NUM_ITERATIONS = 200;
@@ -46,9 +45,7 @@ void* consumer (void* v) {
 }
 
 int main (int argc, char** argv) {
-  uthread_t t[4];
-
-  uthread_init (4);
+  pthread_t t[NUM_THREADS];
 
   // TODO: Create Threads and Join
     sem_init(&mutex, 0, 1);
@@ -74,5 +71,5 @@ int main (int argc, char** argv) {
     printf ("  items=%d, %d times\n", i, histogram [i]);
     sum += histogram [i];
   }
-  assert (sum == sizeof (t) / sizeof (uthread_t) * NUM_ITERATIONS);
+  assert (sum == sizeof (t) / sizeof (pthread_t) * NUM_ITERATIONS);
 }
