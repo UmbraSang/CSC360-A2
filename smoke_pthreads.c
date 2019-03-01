@@ -71,6 +71,7 @@ pthread_mutex_t matchMutex    = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t paperMutex    = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t tobaccoMutex  = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t resourceMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t actorsWake     = PTHREAD_COND_INITIALIZER;
 
 char* printEnum(enum Resource type){
@@ -96,16 +97,16 @@ void* resourceType(void* prepackage){
     enum Resource type = package->type;
     printf("ResourceType %s Created\n", printEnum(type));
     while(1){
-        pthread_mutex_lock(&resourceMutex);
+        pthread_mutex_lock(&mutex);
         switch(type){
            case MATCH:
-                pthread_cond_wait(&a->match, &resourceMutex);
+                pthread_cond_wait(&a->match, &mutex);
                 break;
             case PAPER:
-                pthread_cond_wait(&a->paper, &resourceMutex);
+                pthread_cond_wait(&a->paper, &mutex);
                 break;
             case TOBACCO:
-                pthread_cond_wait(&a->tobacco, &resourceMutex);
+                pthread_cond_wait(&a->tobacco, &mutex);
                 break;
             default:
                  printf("Error has occured in ResourceType\n");
@@ -115,7 +116,7 @@ void* resourceType(void* prepackage){
         printf("Sum: %d\n", sum);
         printf("Broadcasting actorsWake\n");
         pthread_cond_broadcast(&actorsWake);
-        pthread_mutex_unlock(&resourceMutex);
+        pthread_mutex_unlock(&mutex);
 
 
         // switch (type){
@@ -163,9 +164,9 @@ void* actor(void* prepackage){
     struct Agent* a = package->agent;
     enum Resource type = package->type;
     while(1){
-        pthread_mutex_lock(&actorMutex);
-        pthread_cond_wait(&actorsWake, &actorMutex);
-        pthread_cond_wait(&actorsWake, &actorMutex);
+        pthread_mutex_lock(&mutex);
+        pthread_cond_wait(&actorsWake, &mutex);
+        pthread_cond_wait(&actorsWake, &mutex);
         printf("Actor double awake\n");
         switch (type){
             case MATCH:
@@ -208,7 +209,7 @@ void* actor(void* prepackage){
         //         printf("Error has occured in Actor\n");
         //         break;
         // }
-        pthread_mutex_unlock(&actorMutex);
+        pthread_mutex_unlock(&mutex);
     }
 }
 
