@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "pthread.h"
-#include "uthread_mutex_cond.h"
 
 #define NUM_ITERATIONS 1000
 
@@ -61,10 +60,6 @@ struct threadArgs* createThreadArgs(struct Agent* a, enum Resource b){
     args1->type = b;
     return args1;
 }
-
-int matchAvail = 0;
-int paperAvail = 0;
-int tobaccoAvail = 0;
 
 pthread_cond_t matchActor     = PTHREAD_COND_INITIALIZER;
 pthread_cond_t paperActor     = PTHREAD_COND_INITIALIZER;
@@ -218,8 +213,7 @@ void* agent (void* av) {
 int main (int argc, char** argv) {
   pthread_t t[7];
   struct Agent*  a = createAgent();
-    int i;
-    
+
     pthread_create(&t[1], NULL, actor, createThreadArgs(a, MATCH));
     pthread_create(&t[2], NULL, actor, createThreadArgs(a, PAPER));
     pthread_create(&t[3], NULL, actor, createThreadArgs(a, TOBACCO));
