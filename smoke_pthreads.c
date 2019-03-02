@@ -6,7 +6,7 @@
 #include "pthread.h"
 #include "uthread_mutex_cond.h"
 
-#define NUM_ITERATIONS 500
+#define NUM_ITERATIONS 1000
 
 #ifdef VERBOSE
 #define VERBOSE_PRINT(S, ...) printf (S, ##__VA_ARGS__);
