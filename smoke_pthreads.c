@@ -145,7 +145,7 @@ void* resourceType(void* prepackage){
             break;
         }
     }
-}
+
 
 void smokeIt(struct Agent* a, enum Resource type){
     printf("--Actor %s Smoked\n", printEnum(type));
