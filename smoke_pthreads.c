@@ -6,7 +6,7 @@
 #include "pthread.h"
 #include "uthread_mutex_cond.h"
 
-#define NUM_ITERATIONS 1000
+#define NUM_ITERATIONS 100
 
 #ifdef VERBOSE
 #define VERBOSE_PRINT(S, ...) printf (S, ##__VA_ARGS__);
@@ -260,10 +260,10 @@ int main (int argc, char** argv) {
     printf("Joined Threads\n");
 
     printf("Beginning Asserts\n");
-//   assert (signal_count [MATCH]   == smoke_count [MATCH]);
-//   assert (signal_count [PAPER]   == smoke_count [PAPER]);
-//   assert (signal_count [TOBACCO] == smoke_count [TOBACCO]);
-//   assert (smoke_count [MATCH] + smoke_count [PAPER] + smoke_count [TOBACCO] == NUM_ITERATIONS);
+  assert (signal_count [MATCH]   == smoke_count [MATCH]);
+  assert (signal_count [PAPER]   == smoke_count [PAPER]);
+  assert (signal_count [TOBACCO] == smoke_count [TOBACCO]);
+  assert (smoke_count [MATCH] + smoke_count [PAPER] + smoke_count [TOBACCO] == NUM_ITERATIONS);
   printf ("Smoke counts: %d matches, %d paper, %d tobacco\n",
           smoke_count [MATCH], smoke_count [PAPER], smoke_count [TOBACCO]);
 }
