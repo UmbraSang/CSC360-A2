@@ -41,7 +41,7 @@ struct Agent* createAgent() {
  */
 enum Resource            {    MATCH = 1, PAPER = 2,   TOBACCO = 4};
 char* resource_name [] = {"", "match",   "paper", "", "tobacco"};
-int sum = 0;
+int pivot = 0;
 
 int signal_count [5];  // # of times resource signalled
 int smoke_count  [5];  // # of times smoker with resource smoked
@@ -88,8 +88,8 @@ char* printEnum(enum Resource type){
 }
 
 void actorChooser(){
-    printf("Sum: %d\n", sum);
-    switch (sum){
+    printf("pivot: %d\n", pivot);
+    switch (pivot){
         case 6:
             pthread_cond_signal(&matchActor);
             printf("Actor Match chosen\n");
@@ -112,35 +112,45 @@ void* resourceType(void* prepackage){
     struct Agent* a = package->agent;
     enum Resource type = package->type;
    // printf("ResourceType %s Created\n", printEnum(type));
-    while(1){
-        printf("into %s\n", printEnum(type));
-        pthread_mutex_lock(&a->mutex);
-        sum += type;
-        actorChooser();
-        switch(type){
-           case MATCH:
+    switch(type){
+        case MATCH:
+            while(1){
+                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&a->match, &a->mutex);
-                break;
-            case PAPER:
+                pivot += type;
+                actorChooser();
+                pthread_mutex_unlock(&a->mutex);
+            }
+            break;
+        case PAPER:
+            while(1){
+                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&a->paper, &a->mutex);
-                break;
-            case TOBACCO:
+                pivot += type;
+                actorChooser();
+                pthread_mutex_unlock(&a->mutex);
+            }
+            break;
+        case TOBACCO:
+            while(1){
+                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&a->tobacco, &a->mutex);
-                break;
-            default:
-                 printf("Error has occured in ResourceType\n");
-                 break;
+                pivot += type;
+                actorChooser();
+                pthread_mutex_unlock(&a->mutex);
+            }
+            break;
+        default:
+            printf("Error has occured in ResourceType\n");
+            break;
         }
-        //printf("After %s Switch\n", printEnum(type));
-        
-        pthread_mutex_unlock(&a->mutex);
     }
 }
 
 void smokeIt(struct Agent* a, enum Resource type){
     printf("--Actor %s Smoked\n", printEnum(type));
     smoke_count[type]++;
-    sum=0;
+    pivot=0;
     //printf("Signaling smoke\n");
     pthread_cond_signal(&a->smoke);
 }
@@ -150,26 +160,35 @@ void* actor(void* prepackage){ //single mutex
     struct threadArgs* package = prepackage;
     struct Agent* a = package->agent;
     enum Resource type = package->type;
-    while(1){
-        pthread_mutex_lock(&a->mutex);
-        switch(type){
-           case MATCH:
+    switch(type){
+        case MATCH:
+            while(1){
+                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&matchActor, &a->mutex);
                 smokeIt(a, type);
-                break;
-            case PAPER:
+                pthread_mutex_unlock(&a->mutex);
+            }
+            break;
+        case PAPER:
+            while(1){
+                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&paperActor, &a->mutex);
                 smokeIt(a, type);
-                break;
-            case TOBACCO:
+                pthread_mutex_unlock(&a->mutex);
+            }
+            break;
+        case TOBACCO:
+            while(1){
+                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&tobaccoActor, &a->mutex);
                 smokeIt(a, type);
-                break;
-            default:
-                 printf("Error has occured in ResourceType\n");
-                 break;
+                pthread_mutex_unlock(&a->mutex);
+            }
+            break;
+        default:
+            printf("Error has occured in ResourceType\n");
+            break;
         }
-        pthread_mutex_unlock(&a->mutex);
     }
 }
 
