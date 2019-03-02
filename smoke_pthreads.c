@@ -215,21 +215,21 @@ void* agent (void* av) {
       signal_count [matching_smoker [r]] ++;
       int c = choices [r];
       if (c & MATCH) {
-        //  printf("match available\n")
+        //  printf("match available\n");
         VERBOSE_PRINT ("match available\n");
         pthread_cond_signal (&a->match);
       }
       if (c & PAPER) {
-        //  printf("paper available\n")
+        //  printf("paper available\n");
         VERBOSE_PRINT ("paper available\n");
         pthread_cond_signal (&a->paper);
       }
       if (c & TOBACCO) {
-         // printf("tobacco available\n")
+         // printf("tobacco available\n");
         VERBOSE_PRINT ("tobacco available\n");
         pthread_cond_signal (&a->tobacco);
       }
-          //printf("agent is waiting for smoker to smoke\n")
+          //printf("agent is waiting for smoker to smoke\n");
       VERBOSE_PRINT ("agent is waiting for smoker to smoke\n");
       pthread_cond_wait (&a->smoke, &a->mutex);
     }
@@ -253,10 +253,10 @@ int main (int argc, char** argv) {
     pthread_create(&t[4], NULL, resourceType, createThreadArgs(a, MATCH));
     pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
-    
+    pthread_create(&t[0], NULL, agent, a)
     printf("Threads Created\n");
 
-    pthread_join(pthread_create(&t[0], NULL, agent, a), NULL);
+    pthread_join(t[0], NULL);
     printf("Joined Threads\n");
 
     printf("Beginning Asserts\n");
