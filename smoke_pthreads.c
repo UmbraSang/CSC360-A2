@@ -253,7 +253,7 @@ int main (int argc, char** argv) {
     pthread_create(&t[4], NULL, resourceType, createThreadArgs(a, MATCH));
     pthread_create(&t[5], NULL, resourceType, createThreadArgs(a, PAPER));
     pthread_create(&t[6], NULL, resourceType, createThreadArgs(a, TOBACCO));
-    pthread_create(&t[0], NULL, agent, a)
+    pthread_create(&t[0], NULL, agent, a);
     printf("Threads Created\n");
 
     pthread_join(t[0], NULL);
