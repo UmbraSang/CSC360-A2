@@ -114,31 +114,31 @@ void* resourceType(void* prepackage){
    // printf("ResourceType %s Created\n", printEnum(type));
     switch(type){
         case MATCH:
+            pthread_mutex_lock(&a->mutex);
             while(1){
-                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&a->match, &a->mutex);
                 pivot += type;
                 actorChooser();
-                pthread_mutex_unlock(&a->mutex);
             }
+            pthread_mutex_unlock(&a->mutex);
             break;
         case PAPER:
+            pthread_mutex_lock(&a->mutex);
             while(1){
-                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&a->paper, &a->mutex);
                 pivot += type;
                 actorChooser();
-                pthread_mutex_unlock(&a->mutex);
             }
+            pthread_mutex_lock(&a->mutex);
             break;
         case TOBACCO:
+            pthread_mutex_lock(&a->mutex);
             while(1){
-                pthread_mutex_lock(&a->mutex);
                 pthread_cond_wait(&a->tobacco, &a->mutex);
                 pivot += type;
                 actorChooser();
-                pthread_mutex_unlock(&a->mutex);
             }
+            pthread_mutex_unlock(&a->mutex);
             break;
         default:
             printf("Error has occured in ResourceType\n");
@@ -162,28 +162,28 @@ void* actor(void* prepackage){ //single mutex
     enum Resource type = package->type;
     switch(type){
         case MATCH:
-            while(1){
                 pthread_mutex_lock(&a->mutex);
+            while(1){
                 pthread_cond_wait(&matchActor, &a->mutex);
                 smokeIt(a, type);
-                pthread_mutex_unlock(&a->mutex);
             }
+                pthread_mutex_unlock(&a->mutex);
             break;
         case PAPER:
-            while(1){
                 pthread_mutex_lock(&a->mutex);
+            while(1){
                 pthread_cond_wait(&paperActor, &a->mutex);
                 smokeIt(a, type);
-                pthread_mutex_unlock(&a->mutex);
             }
+                pthread_mutex_unlock(&a->mutex);
             break;
         case TOBACCO:
-            while(1){
                 pthread_mutex_lock(&a->mutex);
+            while(1){
                 pthread_cond_wait(&tobaccoActor, &a->mutex);
                 smokeIt(a, type);
-                pthread_mutex_unlock(&a->mutex);
             }
+                pthread_mutex_unlock(&a->mutex);
             break;
         default:
             printf("Error has occured in ResourceType\n");
